@@ -2,7 +2,7 @@
 #
 # Author: Cees-Bart Breunesse
 
-using Jlsca.Aes
+using Jlsca:Aes
 using Jldfa
 
 using Base.Test
@@ -20,17 +20,17 @@ function createdump(nrfaults)
     key = rand(UInt8, 16)
     input = rand(UInt8, 16)
     expkey = Aes.KeyExpansion(key, 10, 4)
-    correct = Cipher(input,expkey)
+    correct = Aes.Cipher(input,expkey)
 
     (path,io) = mktemp()
 
     print("dumping into $path\n")
 
     # first is correct
-    write(io, bytes2hex(Cipher(input,expkey)), "\n")
+    write(io, bytes2hex(Aes.Cipher(input,expkey)), "\n")
 
     for i in 1:nrfaults        
-        write(io, bytes2hex(Cipher(input,expkey,corrupt)), "\n")
+        write(io, bytes2hex(Aes.Cipher(input,expkey,corrupt)), "\n")
     end
 
     close(io)

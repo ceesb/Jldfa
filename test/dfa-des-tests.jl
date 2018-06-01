@@ -2,7 +2,7 @@
 #
 # Author: Cees-Bart Breunesse
 
-using Jlsca.Des
+using Jlsca:Des
 using Jldfa
 
 using Base.Test
@@ -32,18 +32,18 @@ end
 
 function createdump(nrfaults,key,roundlabel)
     input = rand(UInt8, 8)
-    expkey = KeyExpansion(key)
-    correct = Cipher(input,expkey)
+    expkey = Des.KeyExpansion(key)
+    correct = Des.Cipher(input,expkey)
 
     (path,io) = mktemp()
 
     print("dumping faulty $roundlabel into $path\n")
 
     # first is correct
-    write(io, bytes2hex(Cipher(input,expkey)), "\n")
+    write(io, bytes2hex(Des.Cipher(input,expkey)), "\n")
 
     for i in 1:nrfaults        
-        write(io, bytes2hex(Cipher(input,expkey,(x,y) -> corrupt(x,y,roundlabel))), "\n")
+        write(io, bytes2hex(Des.Cipher(input,expkey,(x,y) -> corrupt(x,y,roundlabel))), "\n")
     end
 
     close(io)

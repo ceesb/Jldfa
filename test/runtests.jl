@@ -1,2 +1,2 @@
-include("aes-dfa-tests.jl")
-include("des-dfa-tests.jl")
+include("dfa-aes-tests.jl")
+include("dfa-des-tests.jl")
