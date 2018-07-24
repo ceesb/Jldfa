@@ -2,10 +2,10 @@
 #
 # Author: Cees-Bart Breunesse
 
-using Jlsca:Des
+using Jlsca.Des
 using Jldfa
 
-using Base.Test
+using Test
 
 const left = 1:32
 const right = 33:64

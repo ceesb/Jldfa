@@ -3,11 +3,10 @@
 # Author: Cees-Bart Breunesse
 
 using Jlsca.Aes
-using Base.Test
 
 export AesDfaState
 
-type AesDfaState
+mutable struct AesDfaState
     scores::Array{Int,3}
 
     function AesDfaState()
@@ -42,7 +41,7 @@ function update!(state::AesDfaState,col::Int,faultycol::Vector{UInt8},correctcol
                     y = candy[yrow]
                     kb1 = (Aes.sbox[y+1] ⊻ correctcol[yrow])
                     kb2 = (Aes.sbox[(y ⊻ zmcol[yrow])+1] ⊻ correctcol[yrow])
-                    @test kb1 != kb2
+                    @assert kb1 != kb2
                     state.scores[yrow,col,kb1+1] += 1
                     state.scores[yrow,col,kb2+1] += 1
                 end
@@ -81,10 +80,11 @@ end
 export getKey
 
 function getKey(a::AesDfaState)
-    (vals,indxs) = findmax(a.scores, 3)
+    (vals,indxs) = findmax(a.scores, dims=3)
     recoveredrk = zeros(UInt8,(4,4))
+    ci = CartesianIndices(a.scores)
     for i in indxs
-        (r,c,p) = ind2sub(a.scores, i)
+        (r,c,p) = Tuple(ci[i])
         recoveredrk[r,c] = UInt8(p-1)
     end
     return recoveredrk

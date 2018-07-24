@@ -1,0 +1,7 @@
+name = "Jldfa"
+uuid = "5a935db8-8ed8-11e8-02b6-974745dd95a9"
+authors = ["Cees-Bart Breunesse <ceesb@riscure.com>"]
+version = "0.1.0"
+
+[deps]
+Jlsca = "dcc1f4ae-7dba-11e8-3b6a-0976b94e0e7a"

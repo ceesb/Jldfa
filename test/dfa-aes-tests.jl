@@ -2,10 +2,10 @@
 #
 # Author: Cees-Bart Breunesse
 
-using Jlsca:Aes
+using Jlsca.Aes
 using Jldfa
 
-using Base.Test
+using Test
 
 function corrupt(label,state)
     if label == "r8.s_box"

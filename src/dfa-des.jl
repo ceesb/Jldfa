@@ -2,16 +2,14 @@
 #
 # Author: Cees-Bart Breunesse
 
-using Jlsca.Trs
 using Jlsca.Des
-using Base.Test
 
 const left = 1:32
 const right = 33:64
 
 export DesDfaState
 
-type DesDfaState
+mutable struct DesDfaState
     scores::Array{Int,2}
 
     function DesDfaState()
@@ -47,9 +45,10 @@ export getKey
 
 function getKey(a::DesDfaState)
     rk = zeros(UInt8,8)
-    (vals,indxs) = findmax(a.scores, 2)
+    (vals,indxs) = findmax(a.scores, dims=2)
+    ci = CartesianIndices(a.scores)
     for i in indxs
-        (sbox,p) = ind2sub(a.scores, i)
+        (sbox,p) = Tuple(ci[i])
         rk[sbox] = UInt8(p-1)
     end
     return rk
