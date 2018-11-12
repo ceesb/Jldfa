@@ -8,9 +8,10 @@ export AesDfaState
 
 mutable struct AesDfaState
     scores::Array{Int,3}
+    cnt::Int
 
     function AesDfaState()
-        new(zeros(Int, 4,4,256))
+        new(zeros(Int, 4,4,256), 0)
     end
 end
 
@@ -50,28 +51,49 @@ function update!(state::AesDfaState,col::Int,faultycol::Vector{UInt8},correctcol
     end
 end
 
-function update!(a::AesDfaState,faulty::Vector{UInt8},correct::Vector{UInt8})
+function update!(a::AesDfaState,faulty::Vector{UInt8},correct::Vector{UInt8}; single_column=false)
     faultyM = reshape(faulty, (4,4))   
     correctM = reshape(correct, (4,4))
 
     faultyM = Aes.InvShiftRows(faultyM)
     correctM = Aes.InvShiftRows(correctM)
 
+
+    cols = falses(4)
+
     if faultyM[:,4] != correctM[:,4]
-        col = 4
-        update!(a,col,vec(faultyM[:,col]), vec(correctM[:,col]))
+        cols[4] = true
+        # update!(a,col,vec(faultyM[:,col]), vec(correctM[:,col]))
     end
     if faultyM[:,3] != correctM[:,3]
-        col = 3
-        update!(a,col,vec(faultyM[:,col]), vec(correctM[:,col]))
+        cols[3] = true
+        # update!(a,col,vec(faultyM[:,col]), vec(correctM[:,col]))
     end
     if faultyM[:,2] != correctM[:,2]
-        col = 2
-        update!(a,col,vec(faultyM[:,col]), vec(correctM[:,col]))
+        cols[2] = true
+        # update!(a,col,vec(faultyM[:,col]), vec(correctM[:,col]))
     end
     if faultyM[:,1] != correctM[:,1]
-        col = 1
-        update!(a,col,vec(faultyM[:,col]), vec(correctM[:,col]))
+        cols[1] = true
+        # update!(a,col,vec(faultyM[:,col]), vec(correctM[:,col]))
+    end
+
+
+    if single_column
+        if count(x -> x == true, cols) > 1
+            return false
+        else
+            a.cnt += 1
+            col = findfirst(x -> x == true, cols)
+            update!(a,col,vec(faultyM[:,col]), vec(correctM[:,col]))
+        end
+    else
+        a.cnt += 1
+        for col in eachindex(cols)
+            if cols[col]
+                update!(a,col,vec(faultyM[:,col]), vec(correctM[:,col]))
+            end
+        end
     end
 
     return true
